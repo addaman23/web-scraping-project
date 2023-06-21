@@ -1,0 +1,49 @@
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
+
+def scrape_jobs():
+    url = "https://example.com/jobs"  # Replace with the actual URL of the job listings page
+    
+    # Fetch the web page
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, "html.parser")
+    
+    # Get the job listings
+    job_listings = soup.find_all("div", class_="job-listing")
+    
+    # Define the cutoff date (4 weeks ago from the current date)
+    cutoff_date = datetime.now() - timedelta(weeks=4)
+    
+    for job in job_listings:
+        # Extract relevant fields
+        date_posted = job.find("span", class_="date-posted").text.strip()
+        extracted_date = datetime.strptime(date_posted, "%Y-%m-%d").date()
+        
+        # Check if the job was posted within the last 4 weeks
+        if extracted_date >= cutoff_date.date():
+            company_name = job.find("span", class_="company-name").text.strip()
+            title = job.find("h2", class_="job-title").text.strip()
+            keyword_searched = job.find("span", class_="keyword-searched").text.strip()
+            job_id = job.find("span", class_="job-id").text.strip()
+            description = job.find("div", class_="job-description").text.strip()
+            salary = job.find("span", class_="salary").text.strip()
+            location = job.find("span", class_="location").text.strip()
+            job_type = job.find("span", class_="job-type").text.strip()
+            source = job.find("span", class_="source").text.strip()
+            job_url = job.find("a")["href"]
+            
+            # Store or process the extracted data as desired (e.g., store in database)
+            print("Date Posted:", date_posted)
+            print("Extracted Date:", extracted_date)
+            print("Company Name:", company_name)
+            print("Title:", title)
+            print("Keyword Searched:", keyword_searched)
+            print("Job ID:", job_id)
+            print("Description:", description)
+            print("Salary:", salary)
+            print("Location:", location)
+            print("Job Type:", job_type)
+            print("Source:", source)
+            print("URL:", job_url)
+            print("\n")
